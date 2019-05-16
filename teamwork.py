@@ -3,6 +3,8 @@ import csv
 import re
 import sys
 
+from dateutil import parser, tz
+
 # convert Teamwork "Agent" name into CCA email
 name_email_map = {
     'Bobby White': 'bobbywhite',
@@ -81,7 +83,10 @@ def convert(tw):
     """
     rs = []
 
-    rs.append(tw['CreatedAt'])
+    # parse date string & convert to local timezone
+    date = parser.parse(tw['CreatedAt']).replace(tzinfo=tz.tzutc()).astimezone(tz.tzlocal())
+
+    rs.append(date)
     rs.append(name_email_map[tw['Agent']] + '@cca.edu')
     # options are Directional, Reference, Service, Technical/Computing (best fit)
     rs.append('Technical/Computing')
