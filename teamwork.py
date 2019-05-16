@@ -21,36 +21,48 @@ def process_tags(tags):
     d = {
         'patron_type': '',
         'location': '',
-        'details_list': [],
+        'details_list': set(),
         'details': '',
     }
     for tag in tags.split(','):
         # NOTE: for both patron type & location the way I wrote this, if there
         # are _multiple_ tags of either type then the _last one listed_ is the
-        # one that's used e.g. tags = "Staff,Faculty" -> patron_tpe = "Faculty"
-
-        # look for patron types
+        # one that's used e.g. tags = "Staff,Faculty" -> patron_type = "Faculty"
         ptypes = ['Undergrad', 'Faculty', 'Grad Student', 'Staff', 'Alumni', 'Pre-college']
         for type in ptypes:
             if re.match(type, tag, re.IGNORECASE):
                 d['patron_type'] = type
 
-        # look for locations
+        # tickets often tagged merely "student", we assume most are undergrads
+        if re.match('student', tag, re.IGNORECASE):
+            d['patron_type'] = 'Undergrad'
+
         locations = ['San Francisco', 'Oakland']
         for location in locations:
             if re.match(location, tag, re.IGNORECASE):
                 d['location'] = location
 
-        # look for "details"
+        # look for tags similar to any of our "Details" options
+        # next year (2019-20), we'll break out Google Classroom into own detail
         details = [ 'Printing', 'Materials Library', 'VAULT',
             'Misguided Phone Call', 'Moodle', 'Archives Consultation',
             'Digital Scholarship', 'Google Apps for Education', 'VoiceThread',
+            'Lynda.com',
         ]
         for detail in details:
             if re.match(detail, tag, re.IGNORECASE):
-                d['details_list'].append(detail)
+                d['details_list'].add(detail)
 
-    # construct comma-separated details string from python list
+        if re.match('lynda', tag, re.IGNORECASE):
+            d['details_list'].add('Lynda.com')
+
+        if re.match('google', tag, re.IGNORECASE):
+            d['details_list'].add('Google Apps for Education')
+
+    # if we don't have a location, set it to "Online"
+    if d['location'] == '':
+        d['location'] = 'Online'
+    # construct comma-separated details string from python set
     d['details'] = ', '.join(d['details_list'])
     return d
 
@@ -71,16 +83,14 @@ def convert(tw):
 
     rs.append(tw['CreatedAt'])
     rs.append(name_email_map[tw['Agent']] + '@cca.edu')
-    # @TODO - Directional/Reference/Service/Technical/Computing
-    # probably only ever service or tech/comp
-    rs.append('Service')
-    mode = tw['Source'].replace(' (Manual)', '')
+    # options are Directional, Reference, Service, Technical/Computing (best fit)
+    rs.append('Technical/Computing')
+    mode = tw['Source'].replace(' (Manual)', '').replace('Docs', 'Email')
     rs.append(mode)
     tags = process_tags(tw['Tagged'])
     rs.append(tags['patron_type'])
     rs.append(tags['details'])
-    rs.append('from Teamwork Desk')
-    # @TODO can we assume "online" for many of these?
+    rs.append('Teamwork Desk')
     rs.append(tags['location'])
 
     return rs
