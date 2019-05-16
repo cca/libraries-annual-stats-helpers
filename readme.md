@@ -13,7 +13,7 @@ Rather than ask our Instructional Designer and their work study students to do d
 - Use a (hopefully premade) filter to narrow down to tickets owned by the "Agents" on the instructional design team
 - Click the anachronistic floppy disk icon to download the data as a CSV
 - Run the python script included here to convert e.g. `./teamwork.py teamwork.csv`
-- It'll output a file named "refstats.csv" which can be appended to the "Data" tab of our Reference Statistics form responses spreadsheet
+- It'll output a file named "refstats.csv" which can be prepended to the "Data" tab of our Reference Statistics form responses spreadsheet (insert the Teamwork rows above the `ARRAYFORMULA()` rows that copy data from the "Form Responses" tab)
 
 # LICENSE
 
