@@ -10,6 +10,9 @@ name_email_map = {
     'Bobby White': 'bobbywhite',
     'Ryan Segal': 'ryansegal',
     'Sunny Satpathy': 'santrupti.satpathy',
+    'Daniel Ransom': 'dransom',
+    'Eric Phetteplace': 'ephetteplace',
+    'Lisa Conrad': 'lconrad',
 }
 
 
