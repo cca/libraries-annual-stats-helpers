@@ -5,7 +5,7 @@ import sys
 
 from dateutil import parser, tz
 
-# convert Teamwork "Agent" name into CCA email
+# map to convert Teamwork "Agent" name into CCA email
 name_email_map = {
     'Bobby White': 'bobbywhite',
     'Ryan Segal': 'ryansegal',
@@ -13,6 +13,7 @@ name_email_map = {
     'Daniel Ransom': 'dransom',
     'Eric Phetteplace': 'ephetteplace',
     'Lisa Conrad': 'lconrad',
+    'Nancy Chan': 'nchan',
 }
 
 
@@ -48,20 +49,16 @@ def process_tags(tags):
                 d['location'] = location
 
         # look for tags similar to any of our "Details" options
-        # next year (2019-20), we'll break out Google Classroom into own detail
         details = [ 'Printing', 'Materials Library', 'VAULT',
             'Misguided Phone Call', 'Moodle', 'Archives Consultation',
             'Digital Scholarship', 'Google Apps for Education', 'VoiceThread',
-            'Lynda.com',
+            'Google Classroom',
         ]
         for detail in details:
             if re.match(detail, tag, re.IGNORECASE):
                 d['details_list'].add(detail)
 
-        if re.match('lynda', tag, re.IGNORECASE):
-            d['details_list'].add('Lynda.com')
-
-        if re.match('google', tag, re.IGNORECASE):
+        if re.match('google', tag, re.IGNORECASE) and 'Google Classroom' not in d['details_list']:
             d['details_list'].add('Google Apps for Education')
 
     # if we don't have a location, set it to "Online"

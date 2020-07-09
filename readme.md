@@ -11,9 +11,11 @@ Rather than ask our Instructional Designer and their work study students to do d
 - Visit Teamwork Desk at https://projects.cca.edu/desk/ then **Reports** > **Tickets**
 - Set the date filter appropriately, e.g. the prior 12 months (assuming annual statistics)
 - Use a (hopefully premade) filter to narrow down to tickets owned by the "Agents" on the instructional design team
-- Click the anachronistic floppy disk icon to download the data as a CSV
+- Use the **Export** button to download a CSV
 - Run the python script included here to convert e.g. `./teamwork.py teamwork.csv`
-- It'll output a file named "refstats.csv" which can be prepended to the "Data" tab of our Reference Statistics form responses spreadsheet (insert the Teamwork rows above the `ARRAYFORMULA()` rows that copy data from the "Form Responses" tab)
+- It'll output a file named "refstats.csv"
+
+The CSV will ultimately be prepended to the "Data" tab of our Reference Statistics form responses spreadsheet (insert the Teamwork rows above the `ARRAYFORMULA()` rows that copy data from the "Form Responses" tab). You can use the "Teamwork Desk" tab to help in formatting the data, in particular the date values need to undergo a conversion.
 
 # LICENSE
 
