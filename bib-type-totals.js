@@ -9,6 +9,7 @@ const map = {
     'BOOK': 'Books',
     'BOUNDPER': 'Periodicals',
     'DVD': 'Videos',
+    'EBOOK': 'Books',
     'EQUIPMENT': 'Other',
     'LIBUSEBK': 'Books',
     'LIBUSEBOOK	': 'Books',
