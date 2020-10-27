@@ -7,6 +7,7 @@ from dateutil import parser, tz
 
 # map to convert Teamwork "Agent" name into CCA email
 name_email_map = {
+    'Amber Bales': 'abales',
     'Bobby White': 'bobbywhite',
     'Ryan Segal': 'ryansegal',
     'Sunny Satpathy': 'santrupti.satpathy',
