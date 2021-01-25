@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import csv
 import re
 import sys
@@ -16,6 +17,13 @@ name_email_map = {
     'Lisa Conrad': 'lconrad',
     'Nancy Chan': 'nchan',
 }
+
+
+def parse_argument():
+    parser = argparse.ArgumentParser(description='calculate Teamwork stats for Libraries team')
+    parser.add_argument('file', nargs=1, type=str, help='CSV input file from Teamwork')
+    parser.add_argument('--out', required=False, help='optional output file')
+    return parser.parse_args()
 
 
 def process_tags(tags):
@@ -88,7 +96,12 @@ def convert(tw):
     date = parser.parse(tw['CreatedAt']).replace(tzinfo=tz.tzutc()).astimezone(tz.tzlocal())
 
     rs.append(date)
-    rs.append(name_email_map[tw['Agent']] + '@cca.edu')
+    # map names to emails, note exceptions
+    if tw['Agent'] in name_email_map:
+        rs.append(name_email_map[tw['Agent']] + '@cca.edu')
+    else:
+        print('{} not in the name->email mapping'.format(tw['Agent']))
+        rs.append(tw['Agent'])
     # options are Directional, Reference, Service, Technical/Computing (best fit)
     rs.append('Technical/Computing')
     mode = tw['Source'].replace(' (Manual)', '').replace('Docs', 'Email')
@@ -102,11 +115,18 @@ def convert(tw):
     return rs
 
 
-with open(sys.argv[1], 'r') as infile:
-    with open('refstats.csv', 'w') as outfile:
-        reader = csv.DictReader(infile)
-        writer = csv.writer(outfile)
-        # write header row
-        writer.writerow(['Date/Time','Email Address','Type','Mode of Communication','Patron Type','Details','Notes','Location'])
-        for row in reader:
-            writer.writerow(convert(row))
+def parse_file(infile):
+    with open(sys.argv[1], 'r') as infile:
+        outfile_name = args.out or 'refstats.csv'
+        with open(outfile_name, 'w') as outfile:
+            reader = csv.DictReader(infile)
+            writer = csv.writer(outfile)
+            # write header row
+            writer.writerow(['Date/Time','Email Address','Type','Mode of Communication','Patron Type','Details','Notes','Location'])
+            for row in reader:
+                writer.writerow(convert(row))
+
+
+if __name__ == '__main__':
+    args = parse_argument()
+    parse_file(args.file)
