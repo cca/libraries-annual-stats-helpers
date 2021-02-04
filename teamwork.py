@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import argparse
 import csv
+from datetime import datetime
 import re
 import sys
 
-from dateutil import parser, tz
 
 # map to convert Teamwork "Agent" name into CCA email
 name_email_map = {
@@ -23,6 +23,7 @@ def parse_argument():
     parser = argparse.ArgumentParser(description='calculate Teamwork stats for Libraries team')
     parser.add_argument('file', nargs=1, type=str, help='CSV input file from Teamwork')
     parser.add_argument('--out', required=False, help='optional output file')
+    parser.add_argument('--everyone', action='store_true', help='include non-Libraries staff in output')
     return parser.parse_args()
 
 
@@ -92,16 +93,18 @@ def convert(tw):
     """
     rs = []
 
-    # parse date string & convert to local timezone
-    date = parser.parse(tw['CreatedAt']).replace(tzinfo=tz.tzutc()).astimezone(tz.tzlocal())
+    # Teamwork used to export UTC dates & we needed an extra step to convert
+    datecreated = datetime.fromisoformat(tw['CreatedAt'])
 
-    rs.append(date)
+    rs.append(datecreated.strftime('%m/%d/%Y %H:%M:%S'))
     # map names to emails, note exceptions
     if tw['Agent'] in name_email_map:
         rs.append(name_email_map[tw['Agent']] + '@cca.edu')
-    else:
-        print('{} not in the name->email mapping'.format(tw['Agent']))
+    elif args.everyone:
         rs.append(tw['Agent'])
+    else:
+        print('"{}" not in the name->email mapping, exiting'.format(tw['Agent']))
+        exit(1)
     # options are Directional, Reference, Service, Technical/Computing (best fit)
     rs.append('Technical/Computing')
     mode = tw['Source'].replace(' (Manual)', '').replace('Docs', 'Email')
@@ -116,7 +119,7 @@ def convert(tw):
 
 
 def parse_file(infile):
-    with open(sys.argv[1], 'r') as infile:
+    with open(args.file[0], 'r') as infile:
         outfile_name = args.out or 'refstats.csv'
         with open(outfile_name, 'w') as outfile:
             reader = csv.DictReader(infile)
@@ -124,7 +127,8 @@ def parse_file(infile):
             # write header row
             writer.writerow(['Date/Time','Email Address','Type','Mode of Communication','Patron Type','Details','Notes','Location'])
             for row in reader:
-                writer.writerow(convert(row))
+                if args.everyone or row['Agent'] in name_email_map:
+                    writer.writerow(convert(row))
 
 
 if __name__ == '__main__':

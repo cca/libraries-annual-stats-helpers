@@ -6,16 +6,17 @@ The included JavaScript files all have to do with Koha reports and are meant to 
 
 ## Teamwork Desk -> Reference Statistics
 
-Rather than ask our Instructional Designer and their work study students to do double data entry in both Teamwork Desk, our ticketing system, and the Reference Statistics form, we convert exported Teamwork Desk tickets into a format consistent with our other data. Process:
+Rather than ask our instructional support staff to do double data entry in both Teamwork Desk (our ticketing system) and the Reference Statistics form, we convert exported Teamwork Desk tickets into a format consistent with our other data. Process:
 
 - Visit Teamwork Desk at https://projects.cca.edu/desk/ then **Reports** > **Tickets**
 - Set the date filter appropriately, e.g. the prior 12 months (assuming annual statistics)
-- Use a (hopefully premade) filter to narrow down to tickets owned by the "Agents" on the instructional design team
 - Use the **Export** button to download a CSV
-- Run the python script included here to convert e.g. `./teamwork.py teamwork.csv`
-- It'll output a file named "refstats.csv"
+- Update the `name_email_map` dict in teamwork.py with relevant staff names
+- Run the python script to convert data like `./teamwork.py teamwork-report.csv`
+  + If you want to include non-Libraries staff, use the `--everyone` flag
+- It outputs a "refstats.csv" file
 
-The CSV will ultimately be prepended to the "Data" tab of our Reference Statistics form responses spreadsheet (insert the Teamwork rows above the `ARRAYFORMULA()` rows that copy data from the "Form Responses" tab). You can use the "Teamwork Desk" tab to help in formatting the data, in particular the date values need to undergo a conversion.
+The CSV will ultimately be **prepended** to the "Data" tab of our Reference Statistics form responses spreadsheet (insert the Teamwork rows above the `ARRAYFORMULA()` rows that copy data from the "Form Responses" tab).
 
 # LICENSE
 
