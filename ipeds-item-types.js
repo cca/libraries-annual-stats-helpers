@@ -8,6 +8,8 @@ const map = {
     'LIBUSEBK': 'Books',
     'BOOK': 'Books',
 
+    'EBOOK': 'Digital/Electronic Books',
+
     'DVD': 'Media',
     'EQUIPMENT': 'Media',
     'LIBUSEDVD': 'Media',

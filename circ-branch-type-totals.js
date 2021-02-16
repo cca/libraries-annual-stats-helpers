@@ -45,8 +45,7 @@ $('table tr').each((index, row) => {
     }
 })
 // printy/copy to clipboad in a nicer format
-let out = ''
-out += 'Type\tMeyer Total\n'
+let out = 'Type\tMeyer Total\n'
 for (let key in sum) {
     out += `${key}\t${sum[key].OAK}\n`
 }

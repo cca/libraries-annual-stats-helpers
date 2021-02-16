@@ -9,7 +9,7 @@ const map = {
     'BOOK': 'Books',
     'BOUNDPER': 'Periodicals',
     'DVD': 'Videos',
-    'EBOOK': 'Books',
+    'EBOOK': 'Digital/Electronic Books',
     'EQUIPMENT': 'Other',
     'LIBUSEBK': 'Books',
     'LIBUSEBOOK	': 'Books',
@@ -36,9 +36,10 @@ $('table tr').each((index, row) => {
     }
 })
 // printy/copy to clipboad in a nicer format
-let out = ''
-out += 'Type\tNumber of Titles\n'
+let out = 'Type\tNumber of Titles\n'
 for (let key in sum) {
     if (key !== 'undefined') out += `${key}\t${sum[key]}\n`
 }
+console.log(out)
+console.log("\n%c copied to your clipboard", "font-style: italic")
 copy(out)
