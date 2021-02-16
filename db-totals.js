@@ -34,7 +34,8 @@ const map = {
     "Oxford English Dictionary": "Digital/Electronic Books",
     "Research Library": "Digital/Electronic Serials",
     "Single Journals": "Digital/Electronic Serials",
-    "Springer Books": "Digital/Electronic Books",
+    // the two titles we have from Springer are just OA books
+    // "Springer Books": "Digital/Electronic Books",
     "Taylor & Francis Current Content Access": "Digital/Electronic Serials",
     "Underground and Independent Comics, Comix, and Graphic Novels: Volume 1": "Digital/Electronic Books",
     "University of California Press Journals": "Digital/Electronic Serials",
