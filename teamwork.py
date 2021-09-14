@@ -15,6 +15,7 @@ name_email_map = {
     'Eric Phetteplace': 'ephetteplace',
     'Lisa Conrad': 'lconrad',
     'Nancy Chan': 'nchan',
+    'Rubi Sanmiguel': 'rsanmiguel',
     'Ryan Segal': 'ryansegal',
     'Sunny Satpathy': 'santrupti.satpathy',
 }
