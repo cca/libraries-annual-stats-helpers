@@ -3,19 +3,20 @@ import argparse
 import csv
 from datetime import datetime
 import re
-import sys
-
 
 # map to convert Teamwork "Agent" name into CCA email
+# @TODO add Ming when we know his email
 name_email_map = {
+    'Alia Moussa': 'aliamoussa',
     'Amber Bales': 'abales',
+    'Annemarie Haar': 'ahaar',
     'Bobby White': 'bobbywhite',
-    'Ryan Segal': 'ryansegal',
-    'Sunny Satpathy': 'santrupti.satpathy',
     'Daniel Ransom': 'dransom',
     'Eric Phetteplace': 'ephetteplace',
     'Lisa Conrad': 'lconrad',
     'Nancy Chan': 'nchan',
+    'Ryan Segal': 'ryansegal',
+    'Sunny Satpathy': 'santrupti.satpathy',
 }
 
 
@@ -59,9 +60,16 @@ def process_tags(tags):
                 d['location'] = location
 
         # look for tags similar to any of our "Details" options
-        details = [ 'Printing', 'Materials Library', 'VAULT',
-            'Misguided Phone Call', 'Moodle', 'Archives Consultation',
-            'Digital Scholarship', 'Google Apps for Education', 'VoiceThread',
+        details = [
+            'Printing',
+            'Materials Library',
+            'VAULT',
+            'Misguided Phone Call',
+            'Moodle',
+            'Archives Consultation',
+            'Digital Scholarship',
+            'Google Apps for Education',
+            'VoiceThread',
             'Google Classroom',
         ]
         for detail in details:
@@ -118,19 +126,20 @@ def convert(tw):
     return rs
 
 
-def parse_file(infile):
-    with open(args.file[0], 'r') as infile:
+def parse_file(file):
+    with open(file, 'r') as infile:
         outfile_name = args.out or 'refstats.csv'
         with open(outfile_name, 'w') as outfile:
             reader = csv.DictReader(infile)
             writer = csv.writer(outfile)
             # write header row
-            writer.writerow(['Date/Time','Email Address','Type','Mode of Communication','Patron Type','Details','Notes','Location'])
+            writer.writerow(['Date/Time', 'Email Address', 'Type', 'Mode of Communication', 'Patron Type', 'Details', 'Notes', 'Location'])
             for row in reader:
                 if args.everyone or row['Agent'] in name_email_map:
                     writer.writerow(convert(row))
 
 
 if __name__ == '__main__':
+    global args
     args = parse_argument()
-    parse_file(args.file)
+    parse_file(args.file[0])
