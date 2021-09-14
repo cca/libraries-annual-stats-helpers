@@ -10,13 +10,16 @@ Rather than ask our instructional support staff to do double data entry in both 
 
 - Visit Teamwork Desk at https://projects.cca.edu/desk/ then **Reports** > **Tickets**
 - Set the date filter appropriately, e.g. the prior 12 months (assuming annual statistics)
+- You might use a saved "InST Team" filter to limit tickets to those handled by our agents
 - Use the **Export** button to download a CSV
 - Update the `name_email_map` dict in teamwork.py with relevant staff names
 - Run the python script to convert data like `./teamwork.py teamwork-report.csv`
   + If you want to include non-Libraries staff, use the `--everyone` flag
 - It outputs a "refstats.csv" file
 
-The CSV will ultimately be **prepended** to the "Data" tab of our Reference Statistics form responses spreadsheet (insert the Teamwork rows above the `ARRAYFORMULA()` rows that copy data from the "Form Responses" tab).
+There is a **Teamwork Desk** tab of the Reference Statistics Form spreadsheet where we keep these converted data. You can easily paste onto the end of that sheet by converting the output CSV to a TSV, copying it in full, pasting into the spreadsheet, and removing the header row. Everything but the paste step can be accomplished with the command `csvformat -T refstats.csv | sed 1d | pbcopy`.
+
+The **Teamwork Desk** tab is ultimately **prepended** to the **Data** tab of our Reference Statistics form responses spreadsheet (Teamwork rows are inserted via a `QUERY()` formula above the `ARRAYFORMULA()` rows that copy data from the "Form Responses" tab).
 
 # LICENSE
 
