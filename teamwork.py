@@ -10,6 +10,7 @@ name_email_map = {
     'Alia Moussa': 'aliamoussa',
     'Amber Bales': 'abales',
     'Annemarie Haar': 'ahaar',
+    'Bobby Deetz': 'bobbydeetz',
     'Bobby White': 'bobbywhite',
     'Daniel Ransom': 'dransom',
     'Eric Phetteplace': 'ephetteplace',
