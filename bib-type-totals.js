@@ -1,4 +1,4 @@
-// Koha report: https://library-staff.cca.edu/cgi-bin/koha/reports/guided_reports.pl?reports=61&phase=Run%20this%20report
+// Koha report: https://library-staff.cca.edu/cgi-bin/koha/reports/guided_reports.pl?reports=61&phase=Run%20this%20report&limit=50
 const map = {
     '': 'Other',
     '2DAYRES': 'Reserves',
@@ -35,11 +35,15 @@ $('table tr').each((index, row) => {
         sum[map[type]] += quantity
     }
 })
+// sort categories alphabetically but put 'Other' at the end
+let cats = Object.keys(sum).sort()
+cats.splice(cats.indexOf('Other'), 1)
+cats.push('Other')
+
 // printy/copy to clipboad in a nicer format
 let out = 'Type\tNumber of Titles\n'
-for (let key in sum) {
-    if (key !== 'undefined') out += `${key}\t${sum[key]}\n`
-}
+cats.forEach(c => if (c !== 'undefined') out += `${c}\t${sum[c]}\n`)
+
 console.log(out)
 console.log("\n%c copied to your clipboard", "font-style: italic")
 copy(out)

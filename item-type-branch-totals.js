@@ -36,9 +36,12 @@ $('table tr').each((index, row) => {
         }
     }
 })
-// printy/copy to clipboad in a nicer format
+// print/copy to clipboad in a nicer format
 let out = 'Type\tMeyer\tSimpson\n'
 for (let key in sum) {
     out += `${key}\t${sum[key].OAK}\t${sum[key].SF}\n`
 }
+
+console.log(out)
+console.log("\n%c copied to your clipboard", "font-style: italic")
 copy(out)
