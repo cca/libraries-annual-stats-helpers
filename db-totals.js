@@ -42,7 +42,7 @@ const map = {
     "Wiley Online Library All Journals": "Digital/Electronic Serials"
 }
 
-let sum = { "Databases": 0, "Open Access": 0}
+let sum = { "Open Access": 0}
 // build the other categories from the map
 for (let key in map) {
     if (!sum[map[key]]) sum[map[key]] = 0
@@ -59,9 +59,6 @@ function addDBtoTotal(name, titles) {
             console.log(`${name} is categorized as "${type}"`)
             console.log('count', parseInt(titles.replace(/ of \d+/, '')))
             sum[type] += parseInt(titles.replace(/ of \d+/, ''))
-            // track total of databases without including a) ebook collections
-            // & b) single journals under publishers like Duke U Press
-            if (!type.match('Books') && !titles.match(/ of /)) sum.Databases++
             break
         }
     }
