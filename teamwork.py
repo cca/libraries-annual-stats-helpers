@@ -5,7 +5,6 @@ from datetime import datetime
 import re
 
 # map to convert Teamwork "Agent" name into CCA email
-# @TODO add Ming when we know his email
 name_email_map = {
     'Alia Moussa': 'aliamoussa',
     'Amber Bales': 'abales',
@@ -15,6 +14,7 @@ name_email_map = {
     'Daniel Ransom': 'dransom',
     'Eric Phetteplace': 'ephetteplace',
     'Lisa Conrad': 'lconrad',
+    'Mingyu Li': 'mingyuli',
     'Nancy Chan': 'nchan',
     'Rubi Sanmiguel': 'rsanmiguel',
     'Ryan Segal': 'ryansegal',

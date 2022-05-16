@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Summarize a year's worth of COUNTER usage statistics. This must be run from the root
-of the COUNTER 5 Reports Tool app's "all_data" folder hierarchy _after_ that app has
-downloaded all the COUNTER data.
+Summarize a year's worth of COUNTER usage statistics.
+The data is stored in the COUNTER 5 Reports Tool app's "all_data" folder
+which this script expects to exist in an "all_data" directory under your user's
+home. You must run that tool before summarizing the reports.
 """
 import argparse
 import json
@@ -72,8 +73,7 @@ def calc_aggregated(data):
 
 
 def main(year):
-    running = 0
-    for root, dirs, files in os.walk(".DO_NOT_MODIFY/_json/{}".format(year)):
+    for root, dirs, files in os.walk("{}/all_data/.DO_NOT_MODIFY/_json/{}".format(os.path.expanduser('~'), year)):
         for name in files:
             if name.endswith("_PR.json"):
                 print("Processing report {}".format(name))
