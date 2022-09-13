@@ -6,6 +6,7 @@ import re
 
 # map to convert Teamwork "Agent" name into CCA email
 name_email_map = {
+    'Adrian Applin': 'adrian',
     'Alia Moussa': 'aliamoussa',
     'Amber Bales': 'abales',
     'Annemarie Haar': 'ahaar',
@@ -19,6 +20,7 @@ name_email_map = {
     'Rubi Sanmiguel': 'rsanmiguel',
     'Ryan Segal': 'ryansegal',
     'Sunny Satpathy': 'santrupti.satpathy',
+    'Teri Dowling': 'tdowling',
 }
 
 
@@ -63,22 +65,24 @@ def process_tags(tags):
 
         # look for tags similar to any of our "Details" options
         details = [
-            'Printing',
-            'Materials Library',
-            'VAULT',
-            'Misguided Phone Call',
-            'Moodle',
             'Archives Consultation',
             'Digital Scholarship',
             'Google Apps for Education',
+            'Materials Library',
+            'Moodle',
+            'MURAL',
+            'Panopto',
+            'Portal',
+            'Printing',
+            'VAULT',
             'VoiceThread',
-            'Google Classroom',
+            'Zoom',
         ]
         for detail in details:
             if re.match(detail, tag, re.IGNORECASE):
                 d['details_list'].add(detail)
 
-        if re.match('google', tag, re.IGNORECASE) and 'Google Classroom' not in d['details_list']:
+        if re.match('google', tag, re.IGNORECASE):
             d['details_list'].add('Google Apps for Education')
 
     # if we don't have a location, set it to "Online"
