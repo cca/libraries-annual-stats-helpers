@@ -33,9 +33,9 @@ for (let key in map) {
 // loop over table & add each row to its matching sum entry
 $('table tr').each((index, row) => {
     if (index != 0) {
-        let type = $(row).find('td').eq(0).text()
-        let branch = $(row).find('td').eq(1).text()
-        let quantity = parseInt($(row).find('td').eq(2).text())
+        let type = $(row).find('td').eq(0).text().trim()
+        let branch = $(row).find('td').eq(1).text().trim()
+        let quantity = parseInt($(row).find('td').eq(2).text().trim())
 
         if (branch === 'MATLIB') {
             matlib += quantity
