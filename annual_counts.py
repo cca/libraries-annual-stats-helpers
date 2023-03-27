@@ -52,6 +52,18 @@ def add_or_init(platform, dtype, metric, count):
 
 
 def calc_aggregated(data):
+    """ Combine media categories to receive an aggregated total
+
+    Args:
+        data (dict): data object populated from COUNTER reports (see top of this file)
+
+    2023 IPEDS guidance: different platform types use different metrics for their totals.
+    - Ebooks: BR_T1 use unique title request
+    - Multimedia: IR_M1 use total item request
+    - E-serial: TR_J1 use unique title request
+
+    For now we are just using total item requests across the board but putting this here for future reference.
+    """
     ag_type_map = {
         "Article": "Periodicals",
         "Book_Segment": "eBooks",
