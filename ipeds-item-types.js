@@ -32,8 +32,9 @@ for (let key in map) {
 // loop over table & add each row to its matching sum entry
 $('table tr').each((index, row) => {
     if ($(row).find('td').length === 2) {
-        let type = $(row).find('td').first().text()
-        let quantity = parseInt($(row).find('td').last().text())
+        let type = $(row).find('td').first().text().trim()
+        let quantity = parseInt($(row).find('td').last().text().trim())
+        console.log(type, quantity)
         sum[map[type]] += quantity
     }
 })
