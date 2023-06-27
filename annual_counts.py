@@ -84,8 +84,8 @@ def calc_aggregated(data):
             data["Aggregated Resource Types"][ag_type_map[dtype]] += data["Resource Types"][dtype].get("Total_Item_Requests", 0)
 
 
-def main(year):
-    for root, dirs, files in os.walk("{}/all_data/.DO_NOT_MODIFY/_json/{}".format(os.path.expanduser('~'), year)):
+def main(args):
+    for root, dirs, files in os.walk(f"{args.all_data}/.DO_NOT_MODIFY/_json/{args.year[0]}"):
         for name in files:
             if name.endswith("_PR.json"):
                 print("Processing report {}".format(name))
@@ -102,7 +102,7 @@ def main(year):
                                 add_or_init(platform, dtype, metric, count)
 
     calc_aggregated(data)
-    filename = "{}-counts.json".format(year)
+    filename = "{}-counts.json".format(args.year[0])
     with open(filename, 'w') as fh:
         json.dump(data, fh, indent=2, sort_keys=True)
         print("Finished. Wrote results to {}".format(filename))
@@ -111,5 +111,8 @@ def main(year):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Aggregate usage statistics from COUNTER 5 Platform Reports downloaded in bulk via the COUNTER 5 Report Tool.')
     parser.add_argument('year', metavar='YYYY', type=int, nargs=1, help='calendar year to compile stats for')
+    parser.add_argument('-a', '--all_data', metavar='PATH',
+                        default='/Users/ephetteplace/code/COUNTER-5-Report-Tool/all_data',
+                        help='Location of COUNTER 5 Reports Tool "all_data" dir')
     args = parser.parse_args()
-    main(args.year[0])
+    main(args)
