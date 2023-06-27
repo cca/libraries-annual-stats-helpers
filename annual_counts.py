@@ -17,6 +17,7 @@ data = {
         "Multimedia": 0,
         "Other": 0,
         "Periodicals": 0,
+        "Total": 0,
     }
 }
 
@@ -82,6 +83,8 @@ def calc_aggregated(data):
             print("Data type '{}' is not categorized under our aggregated types anywhere, ignoring this data.".format(dtype))
         else:
             data["Aggregated Resource Types"][ag_type_map[dtype]] += data["Resource Types"][dtype].get("Total_Item_Requests", 0)
+            data["Aggregated Resource Types"]["Total"] += data["Resource Types"][dtype].get(
+                "Total_Item_Requests", 0)
 
 
 def main(args):
