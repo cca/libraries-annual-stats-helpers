@@ -33,6 +33,8 @@ for (let key in map) {
 $('table tr').each((index, row) => {
     if ($(row).find('td').length === 3) {
         let type = $(row).find('td').eq(0).text().trim()
+        // skip ILL item, not part of our collection
+        if (type === 'ILL') return
         let titles = parseInt($(row).find('td').eq(1).text().trim())
         let items = parseInt($(row).find('td').eq(2).text().trim())
         sum[map[type]].Titles += titles
