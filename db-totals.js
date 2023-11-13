@@ -28,7 +28,9 @@ const map = {
     "MITPressDirect .* Collection": "Digital/Electronic Books",
     "Newspaper Source": "Digital/Electronic Serials",
     "Oxford Art Online": "Digital/Electronic Books",
+    "Oxford Clinical Psychology All Titles": "Digital/Electronic Books",
     "Oxford English Dictionary": "Digital/Electronic Books",
+    "Oxford Reference Library": "Digital/Electronic Books",
     "ProQuest One Business": "(ignored)",   // see logged note at the end
     "^Research Library$": "Digital/Electronic Serials", // need ^$ otherwise this matches "Open Research Library (Open Access)" too
     "Single Journals": "Digital/Electronic Serials",
@@ -37,12 +39,12 @@ const map = {
     "Taylor & Francis Current Content Access": "Digital/Electronic Serials",
     "Underground and Independent Comics, Comix, and Graphic Novels: Volume 1": "Digital/Electronic Books",
     "University of California Press Journals": "Digital/Electronic Serials",
-    "University of Chicago Press Journals (Current access)": "Digital/Electronic Serials",
+    "University of Chicago Press Journals": "Digital/Electronic Serials",
     "VAULT": "(ignored)",
     "Wiley Online Library All Journals": "Digital/Electronic Serials"
 }
 
-let sum = { "Open Access": 0}
+let sum = { "Databases": 0, "Open Access": 0}
 // build the other categories from the map
 for (let key in map) {
     if (!sum[map[key]]) sum[map[key]] = 0
@@ -50,15 +52,17 @@ for (let key in map) {
 
 let keys = Object.keys(map)
 let patterns = keys.map(key => new RegExp(key))
+const ofregex = / of \d+/
 function addDBtoTotal(name, titles) {
     let matched = false
     for (let i = 0; i < keys.length; i++) {
         if (name.match(patterns[i])) {
             matched = true
+            if (!titles.match(ofregex)) sum["Databases"]++ // don't count 1 title out of many as a full db
             let type = map[keys[i]]
             console.log(`${name} is categorized as "${type}"`)
-            console.log('count', parseInt(titles.replace(/ of \d+/, '')))
-            sum[type] += parseInt(titles.replace(/ of \d+/, ''))
+            console.log('count', parseInt(titles.replace(ofregex, '')))
+            sum[type] += parseInt(titles.replace(ofregex, ''))
             break
         }
     }
@@ -77,8 +81,11 @@ $('#ctl00__lvph_DatabaseListGrid tr').each((idx, row) => {
     }
 })
 
-console.log('Type\tNumber of Titles\n')
+let out = 'Type\tNumber of Titles\n'
 Object.keys(sum).forEach(key => {
-    if (key) console.log(`${key}\t${sum[key]}\n`)
+    if (key) out += `${key}\t${sum[key]}\n`
 })
-console.log("NOTE: ProQuest One Business contains both ebooks and journals and so is not included in these totals. Visit the database detail page then add its titles to the above.")
+console.log(out)
+copy(out)
+console.log("\n%c copied to your clipboard", "font-style: italic")
+console.log("NOTES\n1. ProQuest One Business contains both ebooks and journals and so is not included in these totals. Visit the database detail page then add its titles to the above.\n2. Comics Plus is not included in the ebook totals here since records are loaded directly into Koha.")
