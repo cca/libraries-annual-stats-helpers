@@ -6,95 +6,106 @@ import re
 
 # map to convert Teamwork "Agent" name into CCA email
 name_email_map = {
-    'Adrian Applin': 'adrian',
-    'Alia Moussa': 'aliamoussa',
-    'Amber Bales': 'abales',
-    'Annemarie Haar': 'ahaar',
-    'Bobby Deetz': 'bobbydeetz',
-    'Bobby White': 'bobbywhite',
-    'Daniel Ransom': 'dransom',
-    'Eric Phetteplace': 'ephetteplace',
-    'Lisa Conrad': 'lconrad',
-    'Mingyu Li': 'mingyuli',
-    'Nancy Chan': 'nchan',
-    'Rubi Sanmiguel': 'rsanmiguel',
-    'Ryan Segal': 'ryansegal',
-    'Sunny Satpathy': 'santrupti.satpathy',
-    'Teri Dowling': 'tdowling',
+    "Adrian Applin": "adrian",
+    "Alia Moussa": "aliamoussa",
+    "Amber Bales": "abales",
+    "Annemarie Haar": "ahaar",
+    "Bobby Deetz": "bobbydeetz",
+    "Bobby White": "bobbywhite",
+    "Daniel Ransom": "dransom",
+    "Eric Phetteplace": "ephetteplace",
+    "Lisa Conrad": "lconrad",
+    "Mingyu Li": "mingyuli",
+    "Nancy Chan": "nchan",
+    "Rubi Sanmiguel": "rsanmiguel",
+    "Ryan Segal": "ryansegal",
+    "Sunny Satpathy": "santrupti.satpathy",
+    "Teri Dowling": "tdowling",
 }
 
 
 def parse_argument():
-    parser = argparse.ArgumentParser(description='calculate Teamwork stats for Libraries team')
-    parser.add_argument('file', nargs=1, type=str, help='CSV input file from Teamwork')
-    parser.add_argument('--out', required=False, help='optional output file')
-    parser.add_argument('--everyone', action='store_true', help='include non-Libraries staff in output')
+    parser = argparse.ArgumentParser(
+        description="calculate Teamwork stats for Libraries team"
+    )
+    parser.add_argument("file", nargs=1, type=str, help="CSV input file from Teamwork")
+    parser.add_argument("--out", required=False, help="optional output file")
+    parser.add_argument(
+        "--everyone", action="store_true", help="include non-Libraries staff in output"
+    )
     return parser.parse_args()
 
 
 def process_tags(tags):
-    """ Look in Teamwork Desk "Tags" for info that fits into our other categories
+    """Look in Teamwork Desk "Tags" for info that fits into our other categories
 
     Args: tags string
     Returns: dict with patron_type, location, and details properties
     """
     # hash breaking out particular fields we can find in Teamwork tags
     d = {
-        'patron_type': '',
-        'location': '',
-        'details_list': set(),
-        'details': '',
+        "patron_type": "",
+        "location": "",
+        "details_list": set(),
+        "details": "",
     }
-    for tag in tags.split(','):
-        # NOTE: for both patron type & location the way I wrote this, if there
-        # are _multiple_ tags of either type then the _last one listed_ is the
-        # one that's used e.g. tags = "Staff,Faculty" -> patron_type = "Faculty"
-        ptypes = ['Undergrad', 'Faculty', 'Grad Student', 'Staff', 'Alumni', 'Pre-college']
+    for tag in tags.split(","):
+        # ! For both patron type & location the way I wrote this, if there
+        # ! are _multiple_ tags of either type then the _last one listed_ is the
+        # ! one that's used e.g. tags = "Staff,Faculty" -> patron_type = "Faculty"
+        ptypes = [
+            "Undergrad",
+            "Faculty",
+            "Grad Student",
+            "Staff",
+            "Alumni",
+            "Pre-college",
+        ]
         for type in ptypes:
             if re.match(type, tag, re.IGNORECASE):
-                d['patron_type'] = type
+                d["patron_type"] = type
 
         # tickets often tagged merely "student", we assume most are undergrads
-        if re.match('student', tag, re.IGNORECASE):
-            d['patron_type'] = 'Undergrad'
+        if re.match("student", tag, re.IGNORECASE):
+            d["patron_type"] = "Undergrad"
 
-        locations = ['San Francisco', 'Oakland']
+        locations = ["San Francisco", "Oakland"]
         for location in locations:
             if re.match(location, tag, re.IGNORECASE):
-                d['location'] = location
+                d["location"] = location
 
         # look for tags similar to any of our "Details" options
         details = [
-            'Archives Consultation',
-            'Digital Scholarship',
-            'Google Apps for Education',
-            'Materials Library',
-            'Moodle',
-            'MURAL',
-            'Panopto',
-            'Portal',
-            'Printing',
-            'VAULT',
-            'VoiceThread',
-            'Zoom',
+            "Archives Consultation",
+            "Digital Scholarship",
+            "Google Apps for Education",
+            "Materials Library",
+            "Moodle",
+            "MURAL",
+            "Panopto",
+            "Portal",
+            "Printing",
+            "VAULT",
+            "VoiceThread",
+            "Zoom",
         ]
         for detail in details:
             if re.match(detail, tag, re.IGNORECASE):
-                d['details_list'].add(detail)
+                d["details_list"].add(detail)
 
-        if re.match('google', tag, re.IGNORECASE):
-            d['details_list'].add('Google Apps for Education')
+        if re.match("google", tag, re.IGNORECASE):
+            d["details_list"].add("Google Apps for Education")
 
     # if we don't have a location, set it to "Online"
-    if d['location'] == '':
-        d['location'] = 'Online'
+    if d["location"] == "":
+        d["location"] = "Online"
     # construct comma-separated details string from python set
-    d['details'] = ', '.join(d['details_list'])
+    d["details"] = ", ".join(d["details_list"])
     return d
 
 
 def convert(tw):
-    """ Convert Teamwork Desk statistics into our Reference Statistics
+    """Convert Teamwork Desk statistics into our Reference Statistics
 
     Args:
         teamwork: dict of CSV row from Teamwork Desk output
@@ -108,44 +119,55 @@ def convert(tw):
     rs = []
 
     # Teamwork used to export UTC dates & we needed an extra step to convert
-    datecreated = datetime.fromisoformat(tw['CreatedAt'])
+    datecreated = datetime.fromisoformat(tw["CreatedAt"])
 
-    rs.append(datecreated.strftime('%m/%d/%Y %H:%M:%S'))
+    rs.append(datecreated.strftime("%m/%d/%Y %H:%M:%S"))
     # map names to emails, note exceptions
-    if tw['Agent'] in name_email_map:
-        rs.append(name_email_map[tw['Agent']] + '@cca.edu')
+    if tw["Agent"] in name_email_map:
+        rs.append(name_email_map[tw["Agent"]] + "@cca.edu")
     elif args.everyone:
-        rs.append(tw['Agent'])
+        rs.append(tw["Agent"])
     else:
-        print('"{}" not in the name->email mapping, exiting'.format(tw['Agent']))
+        print('"{}" not in the name->email mapping, exiting'.format(tw["Agent"]))
         exit(1)
     # options are Directional, Reference, Service, Technical/Computing (best fit)
-    rs.append('Technical/Computing')
-    mode = tw['Source'].replace(' (Manual)', '').replace('Docs', 'Email')
+    rs.append("Technical/Computing")
+    mode = tw["Source"].replace(" (Manual)", "").replace("Docs", "Email")
     rs.append(mode)
-    tags = process_tags(tw['Tagged'])
-    rs.append(tags['patron_type'])
-    rs.append(tags['details'])
-    rs.append('Teamwork Desk')
-    rs.append(tags['location'])
+    tags = process_tags(tw["Tagged"])
+    rs.append(tags["patron_type"])
+    rs.append(tags["details"])
+    rs.append("Teamwork Desk")
+    rs.append(tags["location"])
 
     return rs
 
 
 def parse_file(file):
-    with open(file, 'r') as infile:
-        outfile_name = args.out or 'refstats.csv'
-        with open(outfile_name, 'w') as outfile:
+    with open(file, "r") as infile:
+        outfile_name = args.out or "refstats.csv"
+        with open(outfile_name, "w") as outfile:
             reader = csv.DictReader(infile)
             writer = csv.writer(outfile)
             # write header row
-            writer.writerow(['Date/Time', 'Email Address', 'Type', 'Mode of Communication', 'Patron Type', 'Details', 'Notes', 'Location'])
+            writer.writerow(
+                [
+                    "Date/Time",
+                    "Email Address",
+                    "Type",
+                    "Mode of Communication",
+                    "Patron Type",
+                    "Details",
+                    "Notes",
+                    "Location",
+                ]
+            )
             for row in reader:
-                if args.everyone or row['Agent'] in name_email_map:
+                if args.everyone or row["Agent"] in name_email_map:
                     writer.writerow(convert(row))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     global args
     args = parse_argument()
     parse_file(args.file[0])
