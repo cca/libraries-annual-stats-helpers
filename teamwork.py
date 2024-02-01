@@ -5,7 +5,7 @@ from datetime import datetime
 import re
 
 # map to convert Teamwork "Agent" name into CCA email
-name_email_map = {
+name_email_map: dict[str, str] = {
     "Adrian Applin": "adrian",
     "Alia Moussa": "aliamoussa",
     "Amber Bales": "abales",
@@ -24,19 +24,24 @@ name_email_map = {
 }
 
 
-def parse_argument():
+def parse_argument() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="calculate Teamwork stats for Libraries team"
     )
     parser.add_argument("file", nargs=1, type=str, help="CSV input file from Teamwork")
-    parser.add_argument("--out", required=False, help="optional output file")
+    parser.add_argument(
+        "--out",
+        required=False,
+        default="refstats.csv",
+        help="output file (default: refstats.csv)",
+    )
     parser.add_argument(
         "--everyone", action="store_true", help="include non-Libraries staff in output"
     )
     return parser.parse_args()
 
 
-def process_tags(tags):
+def process_tags(tags) -> dict[str, str]:
     """Look in Teamwork Desk "Tags" for info that fits into our other categories
 
     Args: tags string
@@ -104,7 +109,7 @@ def process_tags(tags):
     return d
 
 
-def convert(tw):
+def convert(tw) -> list[str]:
     """Convert Teamwork Desk statistics into our Reference Statistics
 
     Args:
@@ -118,8 +123,9 @@ def convert(tw):
     """
     rs = []
 
-    # Teamwork used to export UTC dates & we needed an extra step to convert
-    datecreated = datetime.fromisoformat(tw["CreatedAt"])
+    # Teamwork Desk date format has changed multiple times, common break point
+    # Currently looks like 2022-10-22 07:38:08 -0700 PDT
+    datecreated = datetime.strptime(tw["CreatedAt"], "%Y-%m-%d %H:%M:%S %z %Z")
 
     rs.append(datecreated.strftime("%m/%d/%Y %H:%M:%S"))
     # map names to emails, note exceptions
@@ -145,8 +151,7 @@ def convert(tw):
 
 def parse_file(file):
     with open(file, "r") as infile:
-        outfile_name = args.out or "refstats.csv"
-        with open(outfile_name, "w") as outfile:
+        with open(args.out, "w") as outfile:
             reader = csv.DictReader(infile)
             writer = csv.writer(outfile)
             # write header row
