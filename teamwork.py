@@ -2,7 +2,6 @@
 import argparse
 import csv
 from datetime import datetime
-import re
 
 # map to convert Teamwork "Agent" name into CCA email
 name_email_map: dict[str, str] = {
@@ -50,14 +49,13 @@ def process_tags(tags) -> dict[str, str]:
     # hash breaking out particular fields we can find in Teamwork tags
     d = {
         "patron_type": "",
-        "location": "",
+        "location": "Online",
         "details_list": set(),
         "details": "",
     }
     for tag in tags.split(","):
-        # ! For both patron type & location the way I wrote this, if there
-        # ! are _multiple_ tags of either type then the _last one listed_ is the
-        # ! one that's used e.g. tags = "Staff,Faculty" -> patron_type = "Faculty"
+        # ! For patron type, if there are multiple matching TWD tags then the
+        # ! first match is used, e.g. "Staff,Faculty" -> patron type = "Staff"
         ptypes = [
             "Undergrad",
             "Faculty",
@@ -67,23 +65,21 @@ def process_tags(tags) -> dict[str, str]:
             "Pre-college",
         ]
         for type in ptypes:
-            if re.match(type, tag, re.IGNORECASE):
+            if type.lower() in tag.lower():
                 d["patron_type"] = type
+                break
 
         # tickets often tagged merely "student", we assume most are undergrads
-        if re.match("student", tag, re.IGNORECASE):
+        if "student" in tag.lower() and d["patron_type"] == "":
             d["patron_type"] = "Undergrad"
 
-        locations = ["San Francisco", "Oakland"]
-        for location in locations:
-            if re.match(location, tag, re.IGNORECASE):
-                d["location"] = location
+        if "san francisco" in tag.lower():
+            d["location"] = "San Francisco"
 
         # look for tags similar to any of our "Details" options
         details = [
             "Archives Consultation",
             "Digital Scholarship",
-            "Google Apps for Education",
             "Materials Library",
             "Moodle",
             "MURAL",
@@ -95,15 +91,12 @@ def process_tags(tags) -> dict[str, str]:
             "Zoom",
         ]
         for detail in details:
-            if re.match(detail, tag, re.IGNORECASE):
+            if detail.lower() in tag.lower():
                 d["details_list"].add(detail)
 
-        if re.match("google", tag, re.IGNORECASE):
+        if "google" in tag.lower():
             d["details_list"].add("Google Apps for Education")
 
-    # if we don't have a location, set it to "Online"
-    if d["location"] == "":
-        d["location"] = "Online"
     # construct comma-separated details string from python set
     d["details"] = ", ".join(d["details_list"])
     return d
@@ -143,7 +136,7 @@ def convert(tw) -> list[str]:
     tags = process_tags(tw["Tagged"])
     rs.append(tags["patron_type"])
     rs.append(tags["details"])
-    rs.append("Teamwork Desk")
+    rs.append(f"https://projects.cca.edu/desk/tickets/{tw['ID']}")
     rs.append(tags["location"])
 
     return rs
