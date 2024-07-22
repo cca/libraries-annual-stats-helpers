@@ -15,9 +15,7 @@ const map = {
     'LIBUSEDVD': 'Videos',
     'LIBUSESUPP': 'Other materials',
     'LIBUSEVIDE': 'Videos',
-    // NOTE: this is for when material samples are checked out of non-MATLIB
-    // locations (e.g. Simpson). Matlib transactions are totalled separately.
-    'MATSAMP': 'Other materials',
+    'MATSAMP': 'Materials Samples',
     'MIXEDMEDIA': 'Other materials',
     'NEWPER': 'Periodicals',
     'REALIA': 'Other materials',
@@ -25,34 +23,24 @@ const map = {
     'VIDEOTAPE': 'Videos'
 }
 let sum = {}
-let matlib = 0
 // build the categories from the map
 for (let key in map) {
-    if (!sum[map[key]]) sum[map[key]] = {'OAK': 0, 'SF': 0}
+    if (!sum[map[key]]) sum[map[key]] = 0
 }
 // loop over table & add each row to its matching sum entry
 $('table tr').each((index, row) => {
     if (index != 0) {
         let type = $(row).find('td').eq(0).text().trim()
-        let branch = $(row).find('td').eq(1).text().trim()
-        let quantity = parseInt($(row).find('td').eq(2).text().trim())
+        let quantity = parseInt($(row).find('td').eq(1).text().trim())
 
-        if (branch === 'MATLIB') {
-            matlib += quantity
-        } else if (sum.hasOwnProperty(map[type])) {
-            sum[map[type]][branch] += quantity
+        if (sum.hasOwnProperty(map[type])) {
+            sum[map[type]] += quantity
         }
     }
 })
 // printy/copy to clipboad in a nicer format
-let out = 'Type\tMeyer Total\n'
-for (let key in sum) {
-    out += `${key}\t${sum[key].OAK}\n`
+let out = 'Type\tTotal\n'
+for (let key of Object.keys(sum).sort()) {
+    out += `${key}\t${sum[key]}\n`
 }
 console.log(out + '\n')
-out = 'Type\tSimpson Total\n'
-for (let key in sum) {
-    out += `${key}\t${sum[key].SF}\n`
-}
-console.log(out + '\n')
-console.log(`Materials Library\t${matlib}`)
