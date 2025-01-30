@@ -3,7 +3,7 @@
 const map = {
     "Art & Architecture Source": "Digital/Electronic Serials",
     "ARTbibliographies Modern": "Digital/Electronic Serials",
-    "ARTstor": "Digital/Electronic Media",
+    "Artstor on JSTOR": "Digital/Electronic Media",
     "Avery Index to Architectural Periodicals": "Digital/Electronic Serials",
     "Bloomsbury Design Library Core Collection": "Digital/Electronic Books",
     "Bloomsbury.*Full Collection\:2015": "Digital/Electronic Serials",
@@ -61,7 +61,7 @@ function addDBtoTotal(name, titles) {
             if (!titles.match(ofregex)) sum["Databases"]++ // don't count 1 title out of many as a full db
             let type = map[keys[i]]
             console.log(`${name} is categorized as "${type}"`)
-            console.log('count', parseInt(titles.replace(ofregex, '')))
+            // console.log('count', parseInt(titles.replace(ofregex, '')))
             sum[type] += parseInt(titles.replace(ofregex, ''))
             break
         }
