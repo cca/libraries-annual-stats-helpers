@@ -13,7 +13,7 @@ import argparse
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 data: dict[str, Any] = {
     "Platforms": {},
@@ -41,7 +41,7 @@ def add_or_init(platform: str, dtype: str, metric: str, count: int) -> None:
     global data
 
     # print info about Multimedia data
-    if dtype == "Multimedia":
+    if dtype == "Multimedia" and os.environ.get("DEBUG"):
         print("Found {} {} for type {} on {}".format(count, metric, dtype, platform))
 
     # case 1: platform does not yet exist
@@ -60,6 +60,38 @@ def add_or_init(platform: str, dtype: str, metric: str, count: int) -> None:
         data["Resource Types"][dtype][metric] = count
     else:
         data["Resource Types"][dtype][metric] += count
+
+
+def counter5(report: dict[str, Any]) -> None:
+    for item in report.get("Report_Items", []):
+        dtype: str = item["Data_Type"]
+        platform: str = item["Platform"]
+        for period in item["Performance"]:
+            for instance in period["Instance"]:
+                metric: str = instance["Metric_Type"]
+                count: int = instance["Count"]
+                if os.environ.get("DEBUG"):
+                    print(
+                        "{} {} for type {} on {}".format(count, metric, dtype, platform)
+                    )
+                add_or_init(platform, dtype, metric, count)
+
+
+def counter51(report: dict[str, Any]) -> None:
+    for item in report.get("Report_Items", []):
+        platform: str = item["Platform"]
+        for attr_perf in item["Attribute_Performance"]:
+            dtype: str = attr_perf["Data_Type"]
+            for metric in attr_perf["Performance"]:
+                count: int = sum(attr_perf["Performance"][metric].values())
+                if os.environ.get("DEBUG"):
+                    print(
+                        "{} {} for type {} on {}".format(count, metric, dtype, platform)
+                    )
+                add_or_init(platform, dtype, metric, count)
+
+
+counter_parsers: dict[str, Callable] = {"5": counter5, "5.1": counter51}
 
 
 def calc_aggregated(data) -> None:
@@ -117,16 +149,9 @@ def main(root_path: Path) -> None:
             if name.endswith("_PR.json"):
                 print("Processing report {}".format(name))
                 with open(Path(root) / name, "r") as fh:
-                    report = json.load(fh)
-                    for item in report.get("Report_Items", []):
-                        dtype: str = item["Data_Type"]
-                        platform: str = item["Platform"]
-                        for period in item["Performance"]:
-                            for instance in period["Instance"]:
-                                metric: str = instance["Metric_Type"]
-                                count: int = instance["Count"]
-                                # print("{} {} for type {} on {}".format(count, metric, dtype, platform))
-                                add_or_init(platform, dtype, metric, count)
+                    report: dict[str, Any] = json.load(fh)
+                    report_version: str = report["Report_Header"]["Release"]
+                    counter_parsers[report_version](report)
 
     calc_aggregated(data)
     filename: str = f"{year}-counts.json" if year else "counts.json"
