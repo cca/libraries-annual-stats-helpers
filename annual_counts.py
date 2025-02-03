@@ -4,10 +4,15 @@ Summarize a year's worth of COUNTER usage statistics.
 The data is stored in the COUNTER 5 Reports Tool app's "all_data" folder
 which this script expects to exist in an "all_data" directory under your user's
 home. You must run that tool before summarizing the reports.
+
+NOTE: the canonical version of this script lives in libraries-annual-stats-helpers repo
+https://github.com/cca/libraries-annual-stats-helpers
+and changes to it should be tracked there.
 """
 import argparse
 import json
 import os
+from pathlib import Path
 
 data = {
     "Platforms": {},
@@ -18,12 +23,12 @@ data = {
         "Other": 0,
         "Periodicals": 0,
         "Total": 0,
-    }
+    },
 }
 
 
 def add_or_init(platform, dtype, metric, count):
-    """ Add to an existing category in the data dict
+    """Add to an existing category in the data dict
     or initialize one if it does not already exist.
 
     Args:
@@ -34,9 +39,13 @@ def add_or_init(platform, dtype, metric, count):
     """
     global data
 
+    # print info about Multimedia data
+    if dtype == "Multimedia":
+        print("Found {} {} for type {} on {}".format(count, metric, dtype, platform))
+
     # case 1: platform does not yet exist
     if not data["Platforms"].get(platform, False):
-        data["Platforms"][platform] = { metric: count }
+        data["Platforms"][platform] = {metric: count}
     # case 2: we have the platform but not this particular metric
     elif not data["Platforms"][platform].get(metric, False):
         data["Platforms"][platform][metric] = count
@@ -45,7 +54,7 @@ def add_or_init(platform, dtype, metric, count):
         data["Platforms"][platform][metric] += count
 
     if not data["Resource Types"].get(dtype, False):
-        data["Resource Types"][dtype] = { metric: count }
+        data["Resource Types"][dtype] = {metric: count}
     elif not data["Resource Types"][dtype].get(metric, False):
         data["Resource Types"][dtype][metric] = count
     else:
@@ -53,7 +62,7 @@ def add_or_init(platform, dtype, metric, count):
 
 
 def calc_aggregated(data):
-    """ Combine media categories to receive an aggregated total
+    """Combine media categories to receive an aggregated total
 
     Args:
         data (dict): data object populated from COUNTER reports (see top of this file)
@@ -80,22 +89,32 @@ def calc_aggregated(data):
     }
     for dtype in data["Resource Types"].keys():
         if not ag_type_map.get(dtype, False):
-            print("Data type '{}' is not categorized under our aggregated types anywhere, ignoring this data.".format(dtype))
+            print(
+                "Data type '{}' is not categorized under our aggregated types anywhere, ignoring this data.".format(
+                    dtype
+                )
+            )
         else:
-            data["Aggregated Resource Types"][ag_type_map[dtype]] += data["Resource Types"][dtype].get("Total_Item_Requests", 0)
-            data["Aggregated Resource Types"]["Total"] += data["Resource Types"][dtype].get(
-                "Total_Item_Requests", 0)
+            data["Aggregated Resource Types"][ag_type_map[dtype]] += data[
+                "Resource Types"
+            ][dtype].get("Total_Item_Requests", 0)
+            data["Aggregated Resource Types"]["Total"] += data["Resource Types"][
+                dtype
+            ].get("Total_Item_Requests", 0)
 
 
 def main(args):
-    for root, dirs, files in os.walk(f"{args.all_data}/.DO_NOT_MODIFY/_json/{args.year[0]}"):
+    for root, dirs, files in os.walk(
+        args.all_data / ".DO_NOT_MODIFY" / "_json" / str(args.year[0])
+    ):
         for name in files:
             if name.endswith("_PR.json"):
                 print("Processing report {}".format(name))
-                with open(os.path.join(root, name), 'r') as fh:
+                with open(root / name, "r") as fh:
                     report = json.load(fh)
                     for item in report.get("Report_Items", []):
-                        dtype = item["Data_Type"]
+                        # COUNTER 5 - Data_Type is a property of each Report_Item
+                        dtype = item.get("Data_Type")
                         platform = item["Platform"]
                         for period in item["Performance"]:
                             for instance in period["Instance"]:
@@ -106,16 +125,29 @@ def main(args):
 
     calc_aggregated(data)
     filename = "{}-counts.json".format(args.year[0])
-    with open(filename, 'w') as fh:
+    with open(filename, "w") as fh:
         json.dump(data, fh, indent=2, sort_keys=True)
         print("Finished. Wrote results to {}".format(filename))
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Aggregate usage statistics from COUNTER 5 Platform Reports downloaded in bulk via the COUNTER 5 Report Tool.')
-    parser.add_argument('year', metavar='YYYY', type=int, nargs=1, help='calendar year to compile stats for')
-    parser.add_argument('-a', '--all_data', metavar='PATH',
-                        default='/Users/ephetteplace/code/COUNTER-5-Report-Tool/all_data',
-                        help='Location of COUNTER 5 Reports Tool "all_data" dir')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Aggregate usage statistics from COUNTER 5 Platform Reports downloaded in bulk via the COUNTER 5 Report Tool."
+    )
+    parser.add_argument(
+        "year",
+        metavar="YYYY",
+        type=int,
+        nargs=1,
+        help="calendar year to compile stats for",
+    )
+    parser.add_argument(
+        "-a",
+        "--all_data",
+        metavar="PATH",
+        type=Path,
+        default=Path("/Users/ephetteplace/code/COUNTER5/all_data"),
+        help='Location of COUNTER 5 Reports Tool "all_data" dir',
+    )
     args = parser.parse_args()
     main(args)
