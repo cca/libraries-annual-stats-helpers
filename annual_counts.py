@@ -13,8 +13,9 @@ import argparse
 import json
 import os
 from pathlib import Path
+from typing import Any
 
-data = {
+data: dict[str, Any] = {
     "Platforms": {},
     "Resource Types": {},
     "Aggregated Resource Types": {
@@ -27,7 +28,7 @@ data = {
 }
 
 
-def add_or_init(platform, dtype, metric, count):
+def add_or_init(platform: str, dtype: str, metric: str, count: int) -> None:
     """Add to an existing category in the data dict
     or initialize one if it does not already exist.
 
@@ -61,7 +62,7 @@ def add_or_init(platform, dtype, metric, count):
         data["Resource Types"][dtype][metric] += count
 
 
-def calc_aggregated(data):
+def calc_aggregated(data) -> None:
     """Combine media categories to receive an aggregated total
 
     Args:
@@ -74,7 +75,8 @@ def calc_aggregated(data):
 
     For now we are just using total item requests across the board but putting this here for future reference.
     """
-    ag_type_map = {
+    # TODO COUNTER 5.1 will probably have new types
+    ag_type_map: dict[str, str] = {
         "Article": "Periodicals",
         "Book_Segment": "eBooks",
         "Book": "eBooks",
@@ -103,7 +105,7 @@ def calc_aggregated(data):
             ].get("Total_Item_Requests", 0)
 
 
-def main(args):
+def main(args) -> None:
     for root, dirs, files in os.walk(
         args.all_data / ".DO_NOT_MODIFY" / "_json" / str(args.year[0])
     ):
@@ -113,25 +115,24 @@ def main(args):
                 with open(root / name, "r") as fh:
                     report = json.load(fh)
                     for item in report.get("Report_Items", []):
-                        # COUNTER 5 - Data_Type is a property of each Report_Item
-                        dtype = item.get("Data_Type")
-                        platform = item["Platform"]
+                        dtype: str = item["Data_Type"]
+                        platform: str = item["Platform"]
                         for period in item["Performance"]:
                             for instance in period["Instance"]:
-                                metric = instance["Metric_Type"]
-                                count = instance["Count"]
+                                metric: str = instance["Metric_Type"]
+                                count: int = instance["Count"]
                                 # print("{} {} for type {} on {}".format(count, metric, dtype, platform))
                                 add_or_init(platform, dtype, metric, count)
 
     calc_aggregated(data)
-    filename = "{}-counts.json".format(args.year[0])
+    filename: str = "{}-counts.json".format(args.year[0])
     with open(filename, "w") as fh:
         json.dump(data, fh, indent=2, sort_keys=True)
         print("Finished. Wrote results to {}".format(filename))
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(
         description="Aggregate usage statistics from COUNTER 5 Platform Reports downloaded in bulk via the COUNTER 5 Report Tool."
     )
     parser.add_argument(
@@ -149,5 +150,5 @@ if __name__ == "__main__":
         default=Path("/Users/ephetteplace/code/COUNTER5/all_data"),
         help='Location of COUNTER 5 Reports Tool "all_data" dir',
     )
-    args = parser.parse_args()
+    args: argparse.Namespace = parser.parse_args()
     main(args)
