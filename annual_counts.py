@@ -105,14 +105,18 @@ def calc_aggregated(data) -> None:
             ].get("Total_Item_Requests", 0)
 
 
-def main(args) -> None:
-    for root, dirs, files in os.walk(
-        args.all_data / ".DO_NOT_MODIFY" / "_json" / str(args.year[0])
-    ):
+def main(root_path: Path) -> None:
+    # parse year from end of path
+    try:
+        year: int | None = int(str(root_path).split(os.sep).pop())
+    except ValueError:
+        year = None
+
+    for root, dirs, files in os.walk(root_path):
         for name in files:
             if name.endswith("_PR.json"):
                 print("Processing report {}".format(name))
-                with open(root / name, "r") as fh:
+                with open(Path(root) / name, "r") as fh:
                     report = json.load(fh)
                     for item in report.get("Report_Items", []):
                         dtype: str = item["Data_Type"]
@@ -125,7 +129,7 @@ def main(args) -> None:
                                 add_or_init(platform, dtype, metric, count)
 
     calc_aggregated(data)
-    filename: str = "{}-counts.json".format(args.year[0])
+    filename: str = f"{year}-counts.json" if year else "counts.json"
     with open(filename, "w") as fh:
         json.dump(data, fh, indent=2, sort_keys=True)
         print("Finished. Wrote results to {}".format(filename))
@@ -136,19 +140,11 @@ if __name__ == "__main__":
         description="Aggregate usage statistics from COUNTER 5 Platform Reports downloaded in bulk via the COUNTER 5 Report Tool."
     )
     parser.add_argument(
-        "year",
-        metavar="YYYY",
-        type=int,
-        nargs=1,
-        help="calendar year to compile stats for",
-    )
-    parser.add_argument(
-        "-a",
-        "--all_data",
-        metavar="PATH",
+        "path",
+        metavar="path/to/year",
         type=Path,
-        default=Path("/Users/ephetteplace/code/COUNTER5/all_data"),
-        help='Location of COUNTER 5 Reports Tool "all_data" dir',
+        nargs=1,
+        help="path to the year of JSON reports, e.g. .DO_NOT_MODIFY/_json/2024",
     )
     args: argparse.Namespace = parser.parse_args()
-    main(args)
+    main(args.path[0])
