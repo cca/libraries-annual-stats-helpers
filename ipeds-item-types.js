@@ -1,4 +1,4 @@
-// https://library-staff.cca.edu/cgi-bin/koha/reports/guided_reports.pl?reports=172&phase=Run%20this%20report
+// https://library-staff.cca.edu/cgi-bin/koha/reports/guided_reports.pl?id=172&op=run
 const map = {
     '': 'Other',
     'ARCHIVE': 'Books',
