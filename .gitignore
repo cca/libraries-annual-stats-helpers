@@ -1,1 +1,5 @@
 *.csv
+data/*
+!data/.keep
+# has 360 API key
+mise.toml

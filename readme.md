@@ -21,6 +21,19 @@ There is a **Teamwork Desk** tab of the Reference Statistics Form spreadsheet wh
 
 The **Teamwork Desk** tab is ultimately **prepended** to the **Data** tab of our Reference Statistics form responses spreadsheet (Teamwork rows are inserted via a `QUERY()` formula above the `ARRAYFORMULA()` rows that copy data from the "Form Responses" tab).
 
+## 360 Admin API
+
+We have preview access to the 360 Admin API which does not have published documentation yet. The included [360api.js](./360api.js) script replaces db-totals.js to compile our annual digital/electronic holdings for ACRL/IPEDS reporting.
+
+The script looks for a `360_API_KEY` environment variable which is used to authenticate with Ex Libris. We can create one using the [Ex Libris Developer Network](https://developers.exlibrisgroup.com) site. If you use `mise` to manage environment, you can autoload the env var in this directory by creating a mise.toml file like:
+
+```toml
+[env]
+360_API_KEY = "secret"
+```
+
+See the wiki for more complete details on digital/electronic holdings reporting.
+
 ## LICENSE
 
 [ECL Version 2.0](https://opensource.org/licenses/ECL-2.0)
