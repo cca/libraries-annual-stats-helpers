@@ -1,4 +1,4 @@
-// Koha report: https://library-staff.cca.edu/cgi-bin/koha/reports/guided_reports.pl?reports=61&phase=Run%20this%20report&limit=50
+// Koha report: https://library-staff.cca.edu/cgi-bin/koha/reports/guided_reports.pl?id=61&op=run&limit=50
 const map = {
     '': 'Other',
     '2DAYRES': 'Reserves',
