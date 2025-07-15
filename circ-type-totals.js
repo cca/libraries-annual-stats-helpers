@@ -1,4 +1,4 @@
-// Koha report: https://library-staff.cca.edu/cgi-bin/koha/reports/guided_reports.pl?phase=Run+this+report&reports=231
+// Koha report: https://library-staff.cca.edu/cgi-bin/koha/reports/guided_reports.pl?op=run&id=231
 const map = {
     '': 'Other materials',
     'ARCHIVE': 'Other materials',
@@ -28,10 +28,11 @@ for (let key in map) {
     if (!sum[map[key]]) sum[map[key]] = 0
 }
 // loop over table & add each row to its matching sum entry
-$('table tr').each((index, row) => {
+$('#report_results tr').each((index, row) => {
     if (index != 0) {
         let type = $(row).find('td').eq(0).text().trim()
         let quantity = parseInt($(row).find('td').eq(1).text().trim())
+        console.log(type, quantity)
 
         if (sum.hasOwnProperty(map[type])) {
             sum[map[type]] += quantity
