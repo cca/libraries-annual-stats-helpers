@@ -9,6 +9,7 @@ NOTE: the canonical version of this script lives in libraries-annual-stats-helpe
 https://github.com/cca/libraries-annual-stats-helpers
 and changes to it should be tracked there.
 """
+
 import argparse
 import json
 import os
@@ -107,19 +108,24 @@ def calc_aggregated(data) -> None:
 
     For now we are just using total item requests across the board but putting this here for future reference.
     """
-    # TODO COUNTER 5.1 will probably have new types
+    # COUNTER 5.1 added several new types (Audiovisual, Conference, Image, Reference_Work, Unspecified)
     ag_type_map: dict[str, str] = {
         "Article": "Periodicals",
+        "Audiovisual": "Multimedia",
         "Book_Segment": "eBooks",
         "Book": "eBooks",
+        "Conference": "Other",
         "Database": "Other",
+        "Image": "Multimedia",
         "Journal": "Periodicals",
         "Multimedia": "Multimedia",
         "Newspaper_or_Newsletter": "Periodicals",
         "Other": "Other",
         "Platform": "Other",
+        "Reference_Work": "eBooks",
         "Report": "Other",
         "Thesis_or_Dissertation": "eBooks",
+        "Unspecified": "Other",
     }
     for dtype in data["Resource Types"].keys():
         if not ag_type_map.get(dtype, False):
