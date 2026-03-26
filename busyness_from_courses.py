@@ -62,9 +62,10 @@ for course in courses:
             current_date += timedelta(days=1)
 
 # Print results
-width: int = 50
+width: int = 45
 print(f"\n{'=' * width}")
-print("AP Summer 2026 - Daily Active Course Count")
+term: str = courses[0].get("term", "Unknown Term").replace("AP_", "").replace("_", " ")
+print(f"{term} - Daily Active Course Count")
 print(f"{'=' * width}\n")
 print(f"{'Date':<12} {'Day':<10} {'Active Courses':<15}")
 print(f"{'-' * width}")
