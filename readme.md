@@ -34,6 +34,46 @@ The script looks for a `360_API_KEY` environment variable which is used to authe
 
 See the wiki for more complete details on digital/electronic holdings reporting.
 
+## Semester Busyness Data
+
+Download the courses JSON from the integrations files "success" bucket then pass them to the [busyness_from_courses.py](./busyness_from_courses.py) script to see how many courses are in session on each date in a term and how many meet on each weekday. This is useful primarily during the summer term when course start and end dates are more variable. Example output:
+
+```sh
+python busyness_from_courses.py course_section_data_AP_Summer_2026.json
+==================================================
+AP Summer 2026 - Daily Active Course Count
+==================================================
+
+Date         Day        Active Courses
+--------------------------------------------------
+2026-05-18   Monday     9
+2026-05-19   Tuesday    9
+...
+2026-08-14   Friday     23
+--------------------------------------------------
+
+Class Sessions by Day of Week:
+--------------------------------------------------
+Day             Total Sessions
+--------------------------------------------------
+Monday          35
+Tuesday         31
+Wednesday       35
+Thursday        30
+Friday          22
+--------------------------------------------------
+
+Semester Statistics:
+  Start Date: 2026-05-18
+  End Date: 2026-08-14
+  Total Days: 89
+  Peak Day: 2026-06-08 (Monday) with 30 courses
+  Total Course-Days: 2077
+  Average Courses/Day: 23.3
+
+Total Courses: 53
+```
+
 ## LICENSE
 
 [ECL Version 2.0](https://opensource.org/licenses/ECL-2.0)
